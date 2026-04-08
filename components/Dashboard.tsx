@@ -221,10 +221,11 @@ export default function Dashboard() {
       setFormSpecs(lastSavedForm.formSpecs);
     } else {
       setNewComp({ brand: '', name: '', image: '' });
-      setFormSpecs(specKeys.map(key => ({ key, value: '', unit: commonUnits[key] || '' })));
-    }
-    setShowAddModal(true);
-  };
+      const defaultKeys = specKeys.length > 0 
+        ? specKeys 
+        : ['處理器', '掃描引擎', '電池容量', '防護等級', '作業系統', '重量'];
+      setFormSpecs(defaultKeys.map(key => ({ key, value: '', unit: commonUnits[key] || '' })));
+    };
 
   const handleEditCompetitor = (comp: Competitor) => {
     setEditingId(comp.id);
