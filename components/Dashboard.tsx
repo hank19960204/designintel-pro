@@ -117,7 +117,7 @@ export default function Dashboard() {
     setCompetitors(newItems.filter((item: any) => !item.isHeader));
   };
 
-  const commonUnits = useMemo(() => {
+  const co mmonUnits = useMemo(() => {
     const units: Record<string, string> = {};
     specKeys.forEach(key => {
       const unitCounts: Record<string, number> = {};
@@ -365,26 +365,19 @@ export default function Dashboard() {
   };
 
   // ── Export CSV ─────────────────────────────────────────────────────
-  const handleExportCSV = async () => {
+const handleExportCSV = () => {
     if (competitors.length === 0) return;
     const allKeys = [...new Set(competitors.flatMap(c => Object.keys(c.specs)))];
-    const rows = competitors.map(c => ({
-      品牌: c.brand,
-      型號: c.name,
-      ...Object.fromEntries(allKeys.map(k => [k, c.specs[k] || ''])),
-    }));
-    try {
-      const { Parser } = await import('json2csv');
-      const parser = new Parser({ fields: ['品牌', '型號', ...allKeys] });
-      const csv = parser.parse(rows);
-      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'DesignIntel-Specs.csv'; a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.error(e);
-    }
+    const headers = ['品牌', '型號', ...allKeys];
+    const rows = competitors.map(c =>
+      [c.brand, c.name, ...allKeys.map(k => c.specs[k] || '')].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')
+    );
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'DesignIntel-Specs.csv'; a.click();
+    URL.revokeObjectURL(url);
   };
 
   // ── Render ─────────────────────────────────────────────────────────
