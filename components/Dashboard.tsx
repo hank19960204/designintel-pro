@@ -117,7 +117,7 @@ export default function Dashboard() {
     setCompetitors(newItems.filter((item: any) => !item.isHeader));
   };
 
-  const co mmonUnits = useMemo(() => {
+  const commonUnits = useMemo(() => {
     const units: Record<string, string> = {};
     specKeys.forEach(key => {
       const unitCounts: Record<string, number> = {};
