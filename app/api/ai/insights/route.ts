@@ -69,3 +69,4 @@ ${competitorsSummary}
       { status: 500 }
     );
   }
+}
