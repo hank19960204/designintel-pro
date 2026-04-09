@@ -65,8 +65,7 @@ ${competitorsSummary}
   } catch (error: any) {
     console.error('[ai/insights]', error);
     return NextResponse.json(
-      { error: 'AI 洞察生成失敗，請確認 GEMINI_API_KEY 及資料格式' },
+      { error: error.message || 'AI 洞察生成失敗' },
       { status: 500 }
     );
   }
-}
