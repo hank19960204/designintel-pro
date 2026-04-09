@@ -50,6 +50,27 @@ export async function GET() {
   }
 }
 
+// ── 工具函式：確保欄位存在，不存在就建立 ──────────────────────────
+async function ensureProperties(specs: Record<string, string>) {
+  try {
+    const db = await notion.databases.retrieve({ database_id: DATABASE_ID });
+    const existingProps = Object.keys(db.properties);
+    
+    for (const key of Object.keys(specs)) {
+      if (!existingProps.includes(key)) {
+        await notion.databases.update({
+          database_id: DATABASE_ID,
+          properties: {
+            [key]: { rich_text: {} },
+          },
+        });
+      }
+    }
+  } catch (e) {
+    console.error('[ensureProperties]', e);
+  }
+}
+
 // ── POST: 新增競品 ─────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
@@ -60,13 +81,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '品牌與型號為必填' }, { status: 400 });
     }
 
+    // 先確保所有規格欄位存在
+    await ensureProperties(specs || {});
+
     const properties: any = {
       '型號': { title: [{ text: { content: name } }] },
       '品牌': { rich_text: [{ text: { content: brand } }] },
       '圖片': { url: image || null },
     };
 
-    // 動態寫入規格欄位
     Object.entries(specs || {}).forEach(([key, value]) => {
       properties[key] = { rich_text: [{ text: { content: value } }] };
     });
@@ -92,6 +115,9 @@ export async function PATCH(req: NextRequest) {
     if (!id) {
       return NextResponse.json({ error: '缺少 id' }, { status: 400 });
     }
+
+    // 先確保所有規格欄位存在
+    await ensureProperties(specs || {});
 
     const properties: any = {};
     if (name) properties['型號'] = { title: [{ text: { content: name } }] };
