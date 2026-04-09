@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '缺少 target 或 competitors' }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const competitorsSummary = competitors
       .map(c => `【${c.brand} ${c.name}】\n${JSON.stringify(c.specs, null, 2)}`)
